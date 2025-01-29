@@ -4,7 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib> // For malloc, realloc
-#include <cstring> // For strcpy
+#include <cstring> 
 #include <string>
 
 // Function to calculate the sum of integers from a file
@@ -127,7 +127,3 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu

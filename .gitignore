@@ -1,0 +1,8 @@
+# Ignore x64 directory
+x64/
+./x64
+
+# Ignore c_malloc.sln
+c_malloc.sln
+
+.vs/

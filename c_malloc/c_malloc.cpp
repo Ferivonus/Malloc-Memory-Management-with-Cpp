@@ -6,6 +6,8 @@
 #include <cstdlib> // For malloc, realloc
 #include <cstring> 
 #include <string>
+#include <locale>
+#include <codecvt>
 
 // Function to calculate the sum of integers from a file
 static int integer_sum(int argc, char* argv[]) {
@@ -64,8 +66,11 @@ static int names_function(int argc, char* argv[]) {
     char* current_name = nullptr; // Pointer for each name
 
     std::string line;
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter; // Converter for UTF-8 to wide char
+
     while (std::getline(file, line)) { // Read each line (name) from file
-        std::wstring wide_line(line.begin(), line.end()); // Convert to wide string
+        // Convert UTF-8 string (line) to wide string
+        std::wstring wide_line = converter.from_bytes(line);
 
         current_name = (char*)malloc(wide_line.size() + 1); // Allocate memory for the current name
         if (current_name == nullptr) {

@@ -4,6 +4,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <stdexcept>
+#include <iomanip>
+
 
 const size_t MAX_MEMORY = 1024 * 1024 * 100;  // 100MB memory limit in here, if u try to break the app LOL.
 
@@ -55,7 +57,7 @@ void MallocMath::loadNumbersFromFile(const std::string& filename) {
     file.close();
 }
 
-int MallocMath::performAddition() const {
+int MallocMath::performAddition() {
     int sum = 0;
     for (size_t i = 0; i < count; i++) {
         sum += numbers[i];
@@ -63,7 +65,7 @@ int MallocMath::performAddition() const {
     return sum;
 }
 
-int MallocMath::performSubtraction() const {
+int MallocMath::performSubtraction() {
     if (count == 0) throw std::runtime_error("No numbers available for subtraction.");
 
     int result = numbers[0];
@@ -73,7 +75,7 @@ int MallocMath::performSubtraction() const {
     return result;
 }
 
-int MallocMath::performMultiplication() const {
+int MallocMath::performMultiplication() {
     if (count == 0) throw std::runtime_error("No numbers available for multiplication.");
 
     int product = 1;
@@ -83,7 +85,7 @@ int MallocMath::performMultiplication() const {
     return product;
 }
 
-double MallocMath::performDivision() const {
+double MallocMath::performDivision() {
     if (count == 0) throw std::runtime_error("No numbers available for division.");
 
     double result = static_cast<double>(numbers[0]);
@@ -109,3 +111,49 @@ void MallocMath::printNumbers() const {
     }
     std::cout << std::endl;
 }
+
+void MallocMath::performAllCalculationsAndWriteToFile(){
+    std::ofstream file("results.txt");  // Writing directly to 'results.txt'
+    if (!file) {
+        std::cerr << "Error: Unable to open file 'results.txt' for writing." << std::endl;
+        return;
+    }
+
+    // Print a header
+    file << "Results of MallocMath Calculations\n";
+    file << "=================================\n";
+    file << std::fixed << std::setprecision(2);  // Set precision for floating point values
+
+    try {
+        // Perform addition
+        int sum = performAddition();
+        file << "Addition Result: " << sum << std::endl;
+
+        // Perform subtraction
+        int difference = performSubtraction();
+        file << "Subtraction Result: " << difference << std::endl;
+
+        // Perform multiplication
+        int product = performMultiplication();
+        file << "Multiplication Result: " << product << std::endl;
+
+        // Perform division
+        double quotient = performDivision();
+        file << "Division Result: " << quotient << std::endl;
+
+    }
+    catch (const std::exception& e) {
+        file << "Error during calculations: " << e.what() << std::endl;
+    }
+
+    // Print the numbers used in the calculations
+    file << "\nStored Numbers: ";
+    for (size_t i = 0; i < count; i++) {
+        file << numbers[i] << " ";
+    }
+    file << std::endl;
+
+    file.close();
+    std::cout << "Calculations and results have been written to 'results.txt'." << std::endl;
+}
+

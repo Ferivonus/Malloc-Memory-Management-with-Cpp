@@ -16,10 +16,11 @@ public:
     ~MallocMath();
 
     void loadNumbersFromFile(const std::string& filename);
-    int performAddition() const;
-    int performSubtraction() const;
-    int performMultiplication() const;
-    double performDivision() const;
+    int performAddition();
+    int performSubtraction();
+    int performMultiplication();
+    double performDivision();
+    void performAllCalculationsAndWriteToFile();
 
     void printNumbers() const;
 };

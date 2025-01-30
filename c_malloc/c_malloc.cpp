@@ -24,6 +24,7 @@ int main(int argc, char* argv[]) {
             std::cout << "Subtraction: " << math.performSubtraction() << std::endl;
             std::cout << "Multiplication: " << math.performMultiplication() << std::endl;
             std::cout << "Division: " << math.performDivision() << std::endl;
+            math.performAllCalculationsAndWriteToFile();
         }
         else if (mode == "names") {
             NameManager nameManager;

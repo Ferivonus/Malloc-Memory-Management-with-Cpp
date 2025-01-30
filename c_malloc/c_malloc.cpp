@@ -1,3 +1,4 @@
+#include "DatabaseManager.h"
 #include "NameManager.h"
 #include "malloc_math.h"
 
@@ -8,7 +9,7 @@
 int main(int argc, char* argv[]) {
     if (argc < 3) {
         std::cerr << "Usage: " << argv[0] << " <mode> <filename.txt>\n";
-        std::cerr << "Modes: math / names\n";
+        std::cerr << "Modes: math / names / db\n";
         return EXIT_FAILURE;
     }
 
@@ -31,8 +32,13 @@ int main(int argc, char* argv[]) {
             nameManager.readNamesFromFile(filename);
             nameManager.printNames();
         }
+        else if (mode == "db") {
+            DatabaseManager dbManager("students.db");
+            dbManager.createTable();
+            dbManager.insertFromTxtFile(filename);
+        }
         else {
-            std::cerr << "Invalid mode! Use 'math' or 'names'.\n";
+            std::cerr << "Invalid mode! Use 'math', 'names', or 'db'.\n";
             return EXIT_FAILURE;
         }
     }

@@ -13,7 +13,8 @@ DatabaseServer::DatabaseServer(const std::string& dbName, int port)
     : port(port), db(nullptr) {
     connectToDatabase(dbName);
     createTables();  
-    setupRoutes();   
+    setupRoutes();
+    printRoutes();
 }
 
 DatabaseServer::~DatabaseServer() {
@@ -240,6 +241,60 @@ void DatabaseServer::executeSQL(const std::string& sql, const std::string& error
         sqlite3_free(errMsg);
     }
 }
+
+void DatabaseServer::printRoutes() {
+    std::cout << "==================== Available API Endpoints ====================" << std::endl;
+
+    // GET /books - Get all books
+    std::cout << "\nGET /books               - Get all books" << std::endl;
+    std::cout << "    - Retrieves a list of all books stored in the database." << std::endl;
+    std::cout << "    - Example Request: curl -X GET http://localhost:<port>/books" << std::endl;
+
+    // GET /book/<id> - Get book by ID
+    std::cout << "\nGET /book/<id>           - Get book by ID" << std::endl;
+    std::cout << "    - Retrieves the details of a specific book based on its ID." << std::endl;
+    std::cout << "    - Example Request: curl -X GET http://localhost:<port>/book/1" << std::endl;
+
+    // POST /insert - Insert a new book
+    std::cout << "\nPOST /insert             - Insert a new book" << std::endl;
+    std::cout << "    - Adds a new book to the database. You need to send the book details in JSON format." << std::endl;
+    std::cout << "    - Example Request: curl -X POST http://localhost:<port>/insert -d \"{\\\"title\\\": \\\"New Book\\\", \\\"author\\\": \\\"Author Name\\\", \\\"isbn\\\": \\\"1234567890\\\", \\\"year\\\": 2025, \\\"publisher\\\": \\\"Publisher Name\\\", \\\"availability\\\": true}\"" << std::endl;
+
+    // POST /upload - Upload a file
+    std::cout << "\nPOST /upload             - Upload a file" << std::endl;
+    std::cout << "    - Allows file uploads using multipart/form-data." << std::endl;
+    std::cout << "    - Example Request: curl -X POST http://localhost:<port>/upload -F \"file=@/path/to/your/file.txt\"" << std::endl;
+
+    // PUT /update/<id> - Update book by ID
+    std::cout << "\nPUT /update/<id>         - Update book by ID" << std::endl;
+    std::cout << "    - Updates the details of a book identified by its ID. Send the updated book data as JSON." << std::endl;
+    std::cout << "    - Example Request: curl -X PUT http://localhost:<port>/update/1 -d \"{\\\"title\\\": \\\"Updated Title\\\", \\\"author\\\": \\\"Updated Author\\\", \\\"isbn\\\": \\\"9876543210\\\", \\\"year\\\": 2023, \\\"publisher\\\": \\\"Updated Publisher\\\", \\\"availability\\\": false}\"" << std::endl;
+
+    // DELETE /delete/<id> - Delete book by ID
+    std::cout << "\nDELETE /delete/<id>      - Delete book by ID" << std::endl;
+    std::cout << "    - Deletes a specific book based on its ID." << std::endl;
+    std::cout << "    - Example Request: curl -X DELETE http://localhost:<port>/delete/1" << std::endl;
+
+    // How to send requests
+    std::cout << "\n================== How to Send Requests ====================" << std::endl;
+    std::cout << "1. **GET Requests**: Simply use curl with the endpoint URL to retrieve data." << std::endl;
+    std::cout << "    Example: curl -X GET http://localhost:<port>/books" << std::endl;
+
+    std::cout << "2. **POST Requests**: Include the data in the request body, typically in JSON format." << std::endl;
+    std::cout << "    Example: curl -X POST http://localhost:<port>/insert -d \"{\\\"title\\\": \\\"New Book\\\", \\\"author\\\": \\\"Author Name\\\"}\"" << std::endl;
+
+    std::cout << "3. **PUT Requests**: Similar to POST, but used to update existing records. Include updated data in the body." << std::endl;
+    std::cout << "    Example: curl -X PUT http://localhost:<port>/update/1 -d \"{\\\"title\\\": \\\"Updated Title\\\"}\"" << std::endl;
+
+    std::cout << "4. **DELETE Requests**: Use DELETE to remove resources by specifying the ID." << std::endl;
+    std::cout << "    Example: curl -X DELETE http://localhost:<port>/delete/1" << std::endl;
+
+    std::cout << "5. **File Uploads**: For uploading files, use multipart/form-data in POST requests." << std::endl;
+    std::cout << "    Example: curl -X POST http://localhost:<port>/upload -F \"file=@/path/to/your/file.txt\"" << std::endl;
+
+    std::cout << "\nMake sure to replace <port> with the actual port number for your server." << std::endl;
+}
+
 
 void DatabaseServer::run() {
     server.listen("localhost", port); 

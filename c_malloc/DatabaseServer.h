@@ -22,6 +22,8 @@
         void setupRoutes();
         void executeSQL(const std::string& sql, const std::string& errorMessage);
 
+        void printRoutes();
+
         // HTTP request handlers
         void handleGetBooks(const httplib::Request& req, httplib::Response& res);
         void handleGetBookById(const httplib::Request& req, httplib::Response& res);

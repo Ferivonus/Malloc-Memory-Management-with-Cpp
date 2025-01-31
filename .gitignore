@@ -2,7 +2,12 @@
 x64/
 ./x64
 
+vcpkg_installed/
+./vcpkg_installed
+
 # Ignore c_malloc.sln
 c_malloc.sln
+
+vcpkg.json
 
 .vs/

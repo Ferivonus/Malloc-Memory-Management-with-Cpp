@@ -1,4 +1,4 @@
-#include "DatabaseManager.h"
+#include "DatabaseServer.h"
 #include "NameManager.h"
 #include "malloc_math.h"
 
@@ -7,17 +7,22 @@
 #include <cstdlib>
 
 int main(int argc, char* argv[]) {
-    if (argc < 3) {
-        std::cerr << "Usage: " << argv[0] << " <mode> <filename.txt>\n";
-        std::cerr << "Modes: math / names / db\n";
+    if (argc < 2) {
+        std::cerr << "Usage: " << argv[0] << " <mode> [filename.txt]\n";
+        std::cerr << "Modes: math / names / db / server\n";
         return EXIT_FAILURE;
     }
 
     std::string mode = argv[1];
-    std::string filename = argv[2];
 
     try {
         if (mode == "math") {
+            if (argc < 3) {
+                std::cerr << "Filename required for math mode.\n";
+                return EXIT_FAILURE;
+            }
+            std::string filename = argv[2];
+
             MallocMath math;
             math.loadNumbersFromFile(filename);
             math.printNumbers();
@@ -28,17 +33,38 @@ int main(int argc, char* argv[]) {
             math.performAllCalculationsAndWriteToFile();
         }
         else if (mode == "names") {
+            if (argc < 3) {
+                std::cerr << "Filename required for names mode.\n";
+                return EXIT_FAILURE;
+            }
+            std::string filename = argv[2];
+
             NameManager nameManager;
             nameManager.readNamesFromFile(filename);
             nameManager.printNames();
         }
         else if (mode == "db") {
-            DatabaseManager dbManager("students.db");
-            dbManager.createTable();
-            dbManager.insertFromTxtFile(filename);
+            if (argc < 3) {
+                std::cerr << "Filename required for database mode.\n";
+                return EXIT_FAILURE;
+            }
+            std::string filename = argv[2];
+
+            DatabaseServer dbServer("students.db", 8080);  // Pass dbName and port
+            dbServer.createTable();  // Ensure table creation
+            dbServer.insertFromTxtFile(filename);  // Insert data from file
+        }
+        else if (mode == "server") {
+            int port = 8080; // Default port
+            if (argc >= 3) {
+                port = std::stoi(argv[2]);
+            }
+
+            DatabaseServer dbServer("students.db", port);  // Create the DatabaseServer with the db and port
+            dbServer.start();  // Start the server
         }
         else {
-            std::cerr << "Invalid mode! Use 'math', 'names', or 'db'.\n";
+            std::cerr << "Invalid mode! Use 'math', 'names', 'db', or 'server'.\n";
             return EXIT_FAILURE;
         }
     }

@@ -1,4 +1,4 @@
-#include "DatabaseServer.h"
+#include "DatabaseManager.h"
 #include "NameManager.h"
 #include "malloc_math.h"
 
@@ -9,7 +9,7 @@
 int main(int argc, char* argv[]) {
     if (argc < 2) {
         std::cerr << "Usage: " << argv[0] << " <mode> [filename.txt]\n";
-        std::cerr << "Modes: math / names / db / server\n";
+        std::cerr << "Modes: math / names / db\n";
         return EXIT_FAILURE;
     }
 
@@ -50,21 +50,30 @@ int main(int argc, char* argv[]) {
             }
             std::string filename = argv[2];
 
-            DatabaseServer dbServer("students.db", 8080);  // Pass dbName and port
-            dbServer.createTable();  // Ensure table creation
-            dbServer.insertFromTxtFile(filename);  // Insert data from file
-        }
-        else if (mode == "server") {
-            int port = 8080; // Default port
-            if (argc >= 3) {
-                port = std::stoi(argv[2]);
+            DatabaseManager dbManager("students.db");
+
+            if (!dbManager.openDatabase()) {
+                std::cerr << "Failed to open database.\n";
+                return EXIT_FAILURE;
             }
 
-            DatabaseServer dbServer("students.db", port);  // Create the DatabaseServer with the db and port
-            dbServer.start();  // Start the server
+            if (!dbManager.createTables()) {
+                std::cerr << "Failed to create tables.\n";
+                dbManager.closeDatabase();
+                return EXIT_FAILURE;
+            }
+
+            if (!dbManager.insertFromTxtFile(filename)) {
+                std::cerr << "Failed to insert students from file.\n";
+                dbManager.closeDatabase();
+                return EXIT_FAILURE;
+            }
+
+            dbManager.getAllStudents();
+            dbManager.closeDatabase();
         }
         else {
-            std::cerr << "Invalid mode! Use 'math', 'names', 'db', or 'server'.\n";
+            std::cerr << "Invalid mode! Use 'math', 'names', or 'db'.\n";
             return EXIT_FAILURE;
         }
     }

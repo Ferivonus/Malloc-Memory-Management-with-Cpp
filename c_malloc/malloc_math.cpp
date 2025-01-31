@@ -6,7 +6,6 @@
 #include <stdexcept>
 #include <iomanip>
 
-
 const size_t MAX_MEMORY = 1024 * 1024 * 100;  // 100MB memory limit in here, if u try to break the app LOL.
 
 MallocMath::MallocMath() : numbers(nullptr), count(0), totalSize(0) {}
@@ -41,7 +40,8 @@ void MallocMath::loadNumbersFromFile(const std::string& filename) {
         throw std::runtime_error("Error: Unable to open file '" + filename + "' for reading.");
     }
 
-    free(numbers);  // Clear previous data
+    // Free previous data and reset variables
+    free(numbers);
     numbers = nullptr;
     count = 0;
     totalSize = 0;
@@ -51,7 +51,14 @@ void MallocMath::loadNumbersFromFile(const std::string& filename) {
         size_t newSize = (count + 1) * sizeof(int);
         allocateMemory(newSize);
 
-        numbers[count++] = num;
+        // Ensure memory is properly allocated before using it
+        if (numbers) {
+            *(numbers + count) = num;  // Use pointer arithmetic
+            count++;
+        }
+        else {
+            throw std::runtime_error("Memory allocation failed while loading numbers.");
+        }
     }
 
     file.close();
@@ -60,7 +67,9 @@ void MallocMath::loadNumbersFromFile(const std::string& filename) {
 int MallocMath::performAddition() {
     int sum = 0;
     for (size_t i = 0; i < count; i++) {
-        sum += numbers[i];
+        if (numbers) {
+            sum += *(numbers + i);  // Use pointer arithmetic
+        }
     }
     return sum;
 }
@@ -68,9 +77,11 @@ int MallocMath::performAddition() {
 int MallocMath::performSubtraction() {
     if (count == 0) throw std::runtime_error("No numbers available for subtraction.");
 
-    int result = numbers[0];
+    int result = *numbers;  // Start with the first number
     for (size_t i = 1; i < count; i++) {
-        result -= numbers[i];
+        if (numbers) {
+            result -= *(numbers + i);  // Use pointer arithmetic
+        }
     }
     return result;
 }
@@ -80,7 +91,9 @@ int MallocMath::performMultiplication() {
 
     int product = 1;
     for (size_t i = 0; i < count; i++) {
-        product *= numbers[i];
+        if (numbers) {
+            product *= *(numbers + i);  // Use pointer arithmetic
+        }
     }
     return product;
 }
@@ -88,13 +101,15 @@ int MallocMath::performMultiplication() {
 double MallocMath::performDivision() {
     if (count == 0) throw std::runtime_error("No numbers available for division.");
 
-    double result = static_cast<double>(numbers[0]);
+    double result = static_cast<double>(*numbers);  // Start with the first number
     for (size_t i = 1; i < count; i++) {
-        if (numbers[i] == 0) {
-            std::cerr << "Error: Division by zero encountered while dividing by " << numbers[i] << "." << std::endl;
-            throw std::runtime_error("Division by zero encountered.");
+        if (numbers) {
+            if (*(numbers + i) == 0) {
+                std::cerr << "Error: Division by zero encountered while dividing by " << *(numbers + i) << "." << std::endl;
+                throw std::runtime_error("Division by zero encountered.");
+            }
+            result /= *(numbers + i);  // Use pointer arithmetic
         }
-        result /= numbers[i];
     }
     return result;
 }
@@ -107,12 +122,14 @@ void MallocMath::printNumbers() const {
 
     std::cout << "Stored numbers: ";
     for (size_t i = 0; i < count; i++) {
-        std::cout << numbers[i] << " ";
+        if (numbers) {
+            std::cout << *(numbers + i) << " ";  // Use pointer arithmetic
+        }
     }
     std::cout << std::endl;
 }
 
-void MallocMath::performAllCalculationsAndWriteToFile(){
+void MallocMath::performAllCalculationsAndWriteToFile() {
     std::ofstream file("results.txt");  // Writing directly to 'results.txt'
     if (!file) {
         std::cerr << "Error: Unable to open file 'results.txt' for writing." << std::endl;
@@ -149,11 +166,12 @@ void MallocMath::performAllCalculationsAndWriteToFile(){
     // Print the numbers used in the calculations
     file << "\nStored Numbers: ";
     for (size_t i = 0; i < count; i++) {
-        file << numbers[i] << " ";
+        if (numbers) {
+            file << *(numbers + i) << " ";  // Use pointer arithmetic
+        }
     }
     file << std::endl;
 
     file.close();
     std::cout << "Calculations and results have been written to 'results.txt'." << std::endl;
 }
-

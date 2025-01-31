@@ -1,13 +1,7 @@
-#ifndef NAME_MANAGER_H
-#define NAME_MANAGER_H
+#ifndef NAMEMANAGER_H
+#define NAMEMANAGER_H
 
-#include <iostream>
-#include <fstream>
-#include <cstdlib>
-#include <cstring>
-#include <locale>
-#include <codecvt>
-#include <stdexcept>
+#include <string>
 
 class NameManager {
 private:
@@ -15,6 +9,7 @@ private:
     size_t totalSize;
 
     void allocateMemory(size_t newSize);
+    void clearNames();
 
 public:
     NameManager();
@@ -22,7 +17,12 @@ public:
 
     void readNamesFromFile(const std::string& filename);
     void printNames() const;
-    void clearNames();
+    size_t getTotalSize() const;
+    std::string getNameAt(size_t index) const;
+    void removeNameAt(size_t index);
+    void clearAllNames();
+    size_t countNames() const;
+    void saveNamesToFile(const std::string& filename) const;
 };
 
-#endif // NAME_MANAGER_H
+#endif // NAMEMANAGER_H
